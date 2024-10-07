@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: MediumAquamarine;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        img {
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
+        button {
+            background-color: #dc3545;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #c82333;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <h1>{{ recipes.Name }}</h1>
+        <img src="{{ recipes.Recipe_img }}" alt="{{ recipes.Name }} image" style="height: 300px;" >
+        <h3>Preparation Time : {{ recipes.Prep_time }}</h3>
+        <h3>Difficulty :
+                {% if recipes.Difficulty == 1 %}Easy
+                {% elif recipes.Difficulty == 2 %}Medium
+                {% elif recipes.Difficulty == 3 %}Hard
+                {% endif %} </h3>
+        <h3>Vegetarian : {{ recipes.Vegetarian|yesno:"Yes,No" }} </h3>
+        <h3>Description : </h3>
+        <p>{{ recipes.Description }}</p>
+        <h3>Ingredients : </h3>
+        <p>{{ recipes.Ingredients }}</p>
+        <h3>Instructions : </h3>
+        <p>{{ recipes.Instructions }}</p>
+        <a href="{% url 'index' %}">Back to Recipes</a>
+        <a href="{% url 'update_recipe' recipes.id %}">Edit Recipe</a>
+        <form action="" method="POST" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Delete Recipe</button>
+        </form>
+    </div>
+</body>
+</html>

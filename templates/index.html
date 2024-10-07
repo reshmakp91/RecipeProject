@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Recipe Page
+{% endblock %}
+{% block content %}
+<script>
+  function confirmDelete(recipeId) {
+    if (confirm('Are you sure you want to delete this recipe?')) {
+      window.location.href = "{% url 'delete_recipe' 0 %}".replace('0', recipeId);
+    }
+  }
+</script>
+<!-- Carousel -->
+<div id="demo" class="carousel slide" data-bs-ride="carousel" style="width: 100vw; margin-left: calc(-50vw + 50%);">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+    <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+    <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+  </div>
+
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="{% static 'recipeapp/c1.jpg' %}" alt="noodles" class="d-block w-100" style="height: 400px; object-fit: cover;">
+    </div>
+    <div class="carousel-item">
+      <img src="{% static 'recipeapp/c2.jpg' %}" alt="momos" class="d-block w-100" style="height: 400px; object-fit: cover;">
+    </div>
+    <div class="carousel-item">
+      <img src="{% static 'recipeapp/c3.jpg' %}" alt="friedrice" class="d-block w-100" style="height: 400px; object-fit: cover;">
+    </div>
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
+<!-- Error Message -->
+{% if error_message %}
+  <div class="alert alert-danger text-center">
+    {{ error_message }}
+  </div>
+{% endif %}
+
+<!-- Available Recipes Section -->
+<h3 style="font-weight: bold; color: MediumVioletRed">Available Recipes</h3>
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert {{ message.tags }}" style="font-weight: bold; color: Red">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+<div class="row">
+  {% if data %}
+    <div class="row">
+      {% for recipe in data %}
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <img src="{{ recipe.Recipe_img }}" class="card-img-top" alt="{{ recipe.Name }} image" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+              <h4 class="card-title" style="font-weight: bold">{{ recipe.Name }}</h4>
+              <p class="card-text">{{ recipe.Description }}</p>
+              <p class="card-text" style="font-weight: bold">Preparation time : {{ recipe.Prep_time }} min</p>
+              {% if recipe.Difficulty %}
+              <p class="card-text" style="font-weight: bold">
+                Difficulty :
+                {% if recipe.Difficulty == 1 %}Easy
+                {% elif recipe.Difficulty == 2 %}Medium
+                {% elif recipe.Difficulty == 3 %}Hard
+                {% endif %}
+              </p>
+              {% endif %}
+              <p class="card-text" style="font-weight: bold">
+                {% if recipe.Vegetarian %}
+                Vegetarian{% else %} Non-Vegetarian
+                {% endif %}
+              </p>
+              <a href="{% url 'recipe_detail' recipe.id %}" class="btn btn-primary">View Recipe</a>
+              <button class="btn btn-danger" onclick="confirmDelete('{{ recipe.id }}')">
+              <i class="bi bi-trash"></i></button>
+
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% elif recipes %}
+    <div class="row">
+      {% for recipe in recipes %}
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <img src="{{ recipe.Recipe_img }}" class="card-img-top" alt="{{ recipe.Name }} image" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+              <h4 class="card-title" style="font-weight: bold">{{ recipe.Name }}</h4>
+              <p class="card-text">{{ recipe.Description }}</p>
+              <p class="card-text" style="font-weight: bold">Preparation time : {{ recipe.Prep_time }} min</p>
+              {% if recipe.Difficulty %}
+              <p class="card-text" style="font-weight: bold">
+                Difficulty :
+                {% if recipe.Difficulty == 1 %}Easy
+                {% elif recipe.Difficulty == 2 %}Medium
+                {% elif recipe.Difficulty == 3 %}Hard
+                {% endif %}
+              </p>
+              {% endif %}
+              <p class="card-text" style="font-weight: bold">
+                {% if recipe.Vegetarian %}
+                Vegetarian{% else %} Non-Vegetarian
+                {% endif %}
+              </p>
+              <a href="{% url 'recipe_detail' recipe.id %}" class="btn btn-primary">View Recipe</a>
+              <button class="btn btn-danger" onclick="confirmDelete('{{ recipe.id }}')">
+              <i class="bi bi-trash"></i></button>
+
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center">
+      No recipes found. Try searching for something else!
+    </div>
+  {% endif %}
+</div>
+
+<!-- Pagination Controls -->
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    {% if recipes.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ recipes.previous_page_number }}{% if search %}&search={{ search }}{% endif %}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+    {% endif %}
+
+    {% for num in recipes.paginator.page_range %}
+      <li class="page-item {% if recipes.number == num %}active{% endif %}">
+        <a class="page-link" href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}">{{ num }}</a>
+      </li>
+    {% endfor %}
+
+    {% if recipes.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ recipes.next_page_number }}{% if search %}&search={{ search }}{% endif %}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+
+{% endblock %}
